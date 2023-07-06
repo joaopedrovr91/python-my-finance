@@ -18,5 +18,13 @@ def update_valor_categoria(request, id):
 
 def ver_planejamento(request):
     categorias = Categoria.objects.all()
-    #TODO: Realizar barra com total
-    return render(request, 'ver_planejamento.html', {'categorias': categorias})
+    total_gasto = sum(categoria.total_gasto() for categoria in categorias)
+    total_planejamento = sum(categoria.valor_planejamento for categoria in categorias)
+    total_percentual = int((total_gasto / total_planejamento) * 100 if total_planejamento != 0 else 0)
+    return render(request, 'ver_planejamento.html', {
+        'categorias': categorias,
+        'total_gasto': total_gasto,
+        'total_planejamento': total_planejamento,
+        'total_percentual': total_percentual
+    })
+
