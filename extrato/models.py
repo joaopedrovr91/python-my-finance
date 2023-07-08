@@ -4,7 +4,9 @@ from perfil.models import Categoria, Conta
 class Valores(models.Model):
     choice_tipo = (
         ('E', 'Entrada'),
-        ('S', 'Saída')
+        ('S', 'Saída'),
+        ('D', 'Despesas Fixas'),
+        ('R', 'Recebimento Fixo'),
     )
     
     valor = models.FloatField()

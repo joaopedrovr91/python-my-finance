@@ -1,14 +1,46 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from perfil.utils import calcula_total
+from perfil.utils import calcula_total, calcula_equilibrio_financeiro
+from contas.models import ContaPagar, ContaPaga  # Import ContaPagar and ContaPaga models
 from .models import Conta, Categoria
 from django.contrib import messages
 from django.contrib.messages import constants
+from extrato.models import Valores
+from datetime import datetime
 
-def home(request): 
+
+def home(request):
+    MES_ATUAL = datetime.now().month
+    DIA_ATUAL = datetime.now().day
+    contas_pagas = ContaPaga.objects.filter(data_pagamento__month = MES_ATUAL).values('conta')
+    contas_vencidas = ContaPagar.objects.filter(dia_pagamento__lt=datetime.now().day).filter(dia_pagamento__lt=DIA_ATUAL).exclude(id__in=contas_pagas).count()
+    contas_proximas_vencimento = ContaPagar.objects.filter(dia_pagamento__lte = DIA_ATUAL + 5).filter(dia_pagamento__gte=DIA_ATUAL).exclude(id__in=contas_pagas).count()
+    
+    valores = Valores.objects.filter(data__month=datetime.now().month)
+    entradas = valores.filter(tipo='E')
+    saidas = valores.filter(tipo='S')
+    despesas = valores.filter(tipo='D')
+    recebidos = valores.filter(tipo='R')
+    total_recebidos = calcula_total(recebidos, 'valor')
+    total_despesas = calcula_total(despesas, 'valor')
+    total_entradas = calcula_total(entradas, 'valor')
+    total_saidas = calcula_total(saidas, 'valor')
     contas = Conta.objects.all()
     total_contas = calcula_total(contas, 'valor')
-    return render(request, 'home.html', {'contas': contas, 'total_contas': total_contas})
+    percentual_gastos_essenciais, percentual_gastos_nao_essenciais = calcula_equilibrio_financeiro()
+    livre = total_recebidos - total_despesas
+    
+    return render(request, 'home.html', {'contas': contas, 
+                                         'total_contas': total_contas, 
+                                         'total_entradas': total_entradas, 
+                                         'total_saidas': total_saidas,
+                                         'percentual_gastos_essenciais': int(percentual_gastos_essenciais),
+                                         'percentual_gastos_nao_essenciais': int(percentual_gastos_nao_essenciais),
+                                         'total_recebidos': total_recebidos,
+                                         'total_despesas': total_despesas,
+                                         'livre': livre,
+                                         'contas_vencidas': contas_vencidas,
+                                         'contas_proximas_vencimento': contas_proximas_vencimento})
+
 
 def gerenciar(request):
     contas = Conta.objects.all()
@@ -50,7 +82,6 @@ def cadastrar_categoria(request):
     nome = request.POST.get('categoria')
     essencial = bool(request.POST.get('essencial'))
 
-    #TODO: Realizar validações
 
     categoria = Categoria(
         categoria=nome,
@@ -68,3 +99,17 @@ def update_categoria(request, id):
     categoria.save()
 
     return redirect('/perfil/gerenciar/')
+
+def dashboard(request):
+    dados = {}
+
+    categorias = Categoria.objects.all()
+
+    for categoria in categorias:
+        total = 0
+        valores = Valores.objects.filter(categoria=categoria)
+        for v in valores:
+            total += v.valor
+        dados[categoria.categoria] = total
+    return render(request, 'dashboard.html', { 'labels': list(dados.keys()), 
+                                               'values': list(dados.values())})
