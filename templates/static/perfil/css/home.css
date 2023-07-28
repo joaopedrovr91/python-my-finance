@@ -6,6 +6,10 @@
 
 }
 
+.card-equilibrio {
+    height: 24em;
+}
+
 .saldo{
     border-left: 2px solid var(--contrast-color);
     padding-left: 10px;

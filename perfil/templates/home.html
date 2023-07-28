@@ -69,51 +69,8 @@
                 </div>
                 
             </div>
-
             <div class="col-md-8">
-                <div class="card">
-                    <div class="row">
-                        <div class="col-md">
-                            <div class="saldo">
-                                <span class="fonte-destaque">Credito fixo mensal</span>
-                                <br>
-                                <span class="font-light">R$ {{total_recebidos}}</span>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="despesa">
-                                <span class="fonte-destaque">Debito fixo mensal</span>
-                                <br>
-                                <span class="font-light">R$ {{total_despesas}}</span>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <hr class="hr-borda">
-                    <span class="fonte-destaque">Total livre</span>
-                    <span class="font-light negativo">R$ {{livre}}</span>
-                    <hr class="hr-borda">
-                    <a href="{% url 'view_extrato' %}" class="botao-principal">Gerenciar dados mensais</a>
-                </div>
-            </div>
-
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="saldo">
-                        <span class="fonte-destaque">Planejamento</span>
-                    </div>
-                    <hr class="hr-borda">
-                    <a href="{% url 'definir_planejamento' %}" class="botao-principal">Definir planejamento</a>
-                    <hr>
-                    <a href="{% url 'ver_planejamento' %}" class="botao-principal">Ver planejamento</a>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card">
+                <div class="card card-equilibrio">
                     <span class="fonte-destaque">Equilibrio financeiro</span>
                     <hr class="hr-borda">
 
@@ -126,18 +83,28 @@
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: {{percentual_gastos_nao_essenciais}}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-
+                    <br>
+                    <br>
                     <hr class="hr-borda">
-                    <a href="{% url 'gerenciar' %}" class="botao-principal">Alterar categorias essenciais</a>
-
+                    <a href="{% url 'view_extrato' %}" class="botao-principal">Gerenciar dados mensais</a>
                 </div>
             </div>
         </div>
         <br>
         <div class="row">
             <div class="col-md-4">
+                <div class="card">
+                    <div class="saldo">
+                        <span class="fonte-destaque">Planejamento</span>
+                    </div>
+                    <hr class="hr-borda">
+                    <a href="{% url 'definir_planejamento' %}" class="botao-principal">Definir planejamento</a>
+                    <hr>
+                    <a href="{% url 'ver_planejamento' %}" class="botao-principal">Ver planejamento</a>
+                    <hr>
+                    <a href="{% url 'dashboard' %}" class="botao-principal">Ver dashboard</a>
+                </div>
             </div>
-            
             <div class="col-md-8">
                 <div class="card">
                     <span class="fonte-destaque">Gerenciar contas</span>
@@ -150,7 +117,9 @@
                     <span class="fonte-light">{{contas_vencidas}} contas vencidas</span>
 
                     <hr class="hr-borda">
-                    
+
+                    <a href="{% url 'definir_contas' %}" class="botao-principal">Cadastrar Conta</a>
+                    <hr>
                     <a href="{% url 'ver_contas' %}" class="botao-principal">Ver mais</a>
 
                 </div>

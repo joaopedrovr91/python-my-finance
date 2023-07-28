@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.messages import constants
 from extrato.models import Valores
 from datetime import datetime
-
+from django.db.models import Sum
 
 def home(request):
     MES_ATUAL = datetime.now().month
@@ -100,16 +100,17 @@ def update_categoria(request, id):
 
     return redirect('/perfil/gerenciar/')
 
+
 def dashboard(request):
     dados = {}
 
     categorias = Categoria.objects.all()
 
     for categoria in categorias:
-        total = 0
-        valores = Valores.objects.filter(categoria=categoria)
-        for v in valores:
-            total += v.valor
-        dados[categoria.categoria] = total
-    return render(request, 'dashboard.html', { 'labels': list(dados.keys()), 
-                                               'values': list(dados.values())})
+        total = Valores.objects.filter(categoria=categoria, tipo='S').aggregate(Sum('valor'))['valor__sum']
+        dados[categoria.categoria] = total or 0 
+
+    return render(request, 'dashboard.html', {
+        'labels': list(dados.keys()), 
+        'values': list(dados.values())
+    })
